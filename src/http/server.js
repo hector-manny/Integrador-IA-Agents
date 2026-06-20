@@ -1,6 +1,8 @@
 ﻿import express from 'express';
 
 import { getConfig } from '../config.js';
+import { isMainModule } from '../utils/is-main-module.js';
+import { consoleLogger } from '../utils/logger.js';
 import {
   getLocationContext,
   getLocationContexts,
@@ -35,10 +37,11 @@ function invalidZipError(message) {
 }
 
 /**
- * @param {{ enableTestRoutes?: boolean }} [options]
+ * @param {{ enableTestRoutes?: boolean, logger?: import('../utils/logger.js').Logger }} [options]
  * @returns {import('express').Express}
  */
 export function createApp(options = {}) {
+  const logger = options.logger ?? consoleLogger;
   const app = express();
 
   app.get('/context', async (req, res, next) => {
@@ -97,7 +100,7 @@ export function createApp(options = {}) {
   }
 
   app.use((err, _req, res, _next) => {
-    console.error(err);
+    logger.error(err);
 
     res.status(500).json(
       ErrorResponseSchema.parse({
@@ -112,26 +115,25 @@ export function createApp(options = {}) {
 }
 
 /**
+ * @param {{ logger?: import('../utils/logger.js').Logger }} [options]
  * @returns {Promise<import('node:http').Server>}
  */
-export async function start() {
+export async function start(options = {}) {
+  const logger = options.logger ?? consoleLogger;
   const config = getConfig();
-  const app = createApp();
+  const app = createApp({ logger });
 
   return new Promise((resolve) => {
     const server = app.listen(config.port, () => {
-      console.error(`HTTP server listening on port ${config.port}`);
+      logger.info(`HTTP server listening on port ${config.port}`);
       resolve(server);
     });
   });
 }
 
-const isDirectRun =
-  process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'));
-
-if (isDirectRun) {
+if (isMainModule(import.meta.url)) {
   start().catch((error) => {
-    console.error(error);
+    consoleLogger.error(error);
     process.exitCode = 1;
   });
 }

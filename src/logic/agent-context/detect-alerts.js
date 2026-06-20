@@ -1,4 +1,5 @@
 import { WIND_ALERT_HIGH_MIN, WIND_ALERT_MEDIUM_MIN } from '../thresholds.js';
+import { ALERT_MESSAGES_ES } from './labels.js';
 import { isSnowCondition, isStormCondition } from './weather-conditions.js';
 
 const SEVERITY_ORDER = { critical: 4, high: 3, medium: 2, low: 1 };
@@ -43,15 +44,14 @@ export function detectAlerts({ weather, air_quality }) {
       alerts.push({
         severity: 'high',
         type: 'air_quality',
-        message: 'Calidad del aire poco saludable. Evita ejercicio prolongado al aire libre.',
+        message: ALERT_MESSAGES_ES.air_quality.high,
         affects: ['respiratory_sensitive', 'children', 'elderly'],
       });
     } else if (aqi > 100) {
       alerts.push({
         severity: 'medium',
         type: 'air_quality',
-        message:
-          'Calidad del aire moderada a insalubre para grupos sensibles. Considera limitar actividades intensas al exterior.',
+        message: ALERT_MESSAGES_ES.air_quality.medium,
         affects: ['respiratory_sensitive', 'children', 'elderly'],
       });
     }
@@ -62,22 +62,21 @@ export function detectAlerts({ weather, air_quality }) {
     alerts.push({
       severity: 'high',
       type: 'extreme_temp',
-      message:
-        'Temperatura bajo cero. Protégete del frío extremo y limita la exposición prolongada.',
+      message: ALERT_MESSAGES_ES.extreme_temp.cold,
       affects: ['elderly'],
     });
   } else if (temp !== undefined && temp > 35) {
     alerts.push({
       severity: 'high',
       type: 'extreme_temp',
-      message: 'Calor extremo. Mantente hidratado y evita esfuerzo intenso al aire libre.',
+      message: ALERT_MESSAGES_ES.extreme_temp.hot,
       affects: ['children', 'elderly'],
     });
   } else if (temp !== undefined && temp >= 30 && temp <= 35) {
     alerts.push({
       severity: 'medium',
       type: 'heat',
-      message: 'Calor elevado. Mantente hidratado y busca sombra en actividades al aire libre.',
+      message: ALERT_MESSAGES_ES.heat.medium,
       affects: ['children', 'elderly'],
     });
   }
@@ -88,13 +87,13 @@ export function detectAlerts({ weather, air_quality }) {
       alerts.push({
         severity: 'high',
         type: 'wind',
-        message: 'Viento muy fuerte. Evita actividades al aire libre expuestas al viento.',
+        message: ALERT_MESSAGES_ES.wind.high,
       });
     } else if (wind >= WIND_ALERT_MEDIUM_MIN) {
       alerts.push({
         severity: 'medium',
         type: 'wind',
-        message: 'Viento notable. Ten precaución con actividades al aire libre.',
+        message: ALERT_MESSAGES_ES.wind.medium,
       });
     }
   }
@@ -104,13 +103,13 @@ export function detectAlerts({ weather, air_quality }) {
     alerts.push({
       severity: 'critical',
       type: 'severe_weather',
-      message: 'Tormenta eléctrica activa. Permanece en interiores y evita espacios abiertos.',
+      message: ALERT_MESSAGES_ES.severe_weather.critical,
     });
   } else if (isSnowCondition(condition)) {
     alerts.push({
       severity: 'medium',
       type: 'winter_weather',
-      message: 'Nieve en la zona. Conduce con precaución y viste abrigo adecuado.',
+      message: ALERT_MESSAGES_ES.winter_weather.medium,
     });
   }
 

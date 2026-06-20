@@ -1,4 +1,4 @@
-import { buildAgentContext } from '../logic/agent-context.js';
+import { buildAgentContext } from '../logic/agent-context/index.js';
 import { calculateOutdoorScore, finalizeOutdoorScore } from '../logic/outdoor-score.js';
 import { getConfig } from '../config.js';
 import { ErrorResponseSchema, LocationContextSchema } from '../models/schemas.js';
@@ -45,15 +45,14 @@ async function fetchEnvironmentalData(lat, lon) {
 }
 
 /**
- * @param {Record<string, unknown> & { _cached_at?: number }} cached
+ * @param {{ payload: Record<string, unknown>, storedAt: number }} cachedEntry
  * @returns {import('zod').infer<typeof LocationContextSchema>}
  */
-function refreshCachedAgentContext(cached) {
-  const cachedAt = cached._cached_at ?? Date.now();
+function refreshCachedAgentContext(cachedEntry) {
+  const cachedAt = cachedEntry.storedAt ?? Date.now();
   const dataAgeMinutes = Math.floor((Date.now() - cachedAt) / 60000);
   const config = getConfig();
-  const rest = { ...cached };
-  delete rest._cached_at;
+  const rest = { ...cachedEntry.payload };
 
   return LocationContextSchema.parse({
     ...rest,
@@ -79,9 +78,9 @@ function refreshCachedAgentContext(cached) {
 export async function getLocationContext(zip) {
   const cacheKey = buildKey('context', zip);
 
-  const cached = cacheService.get(cacheKey);
-  if (cached) {
-    return refreshCachedAgentContext(cached);
+  const cachedEntry = cacheService.getContextCache(cacheKey);
+  if (cachedEntry) {
+    return refreshCachedAgentContext(cachedEntry);
   }
 
   const resolved = await resolveLocation(zip);
@@ -130,7 +129,7 @@ export async function getLocationContext(zip) {
     }),
   });
 
-  cacheService.set(cacheKey, { ...context, _cached_at: Date.now() });
+  cacheService.setContextCache(cacheKey, context);
   return context;
 }
 

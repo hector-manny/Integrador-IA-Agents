@@ -147,7 +147,7 @@ export function calculateOutdoorScore({ temperature_c, windspeed_kmh, condition,
 }
 
 /**
- * Applies source-based adjustments after base score calculation (ADR-050).
+ * Applies source-based adjustments after base score calculation (ip_fallback −1).
  * @param {number | null} score
  * @param {'zip' | 'ip_fallback'} source
  * @returns {number | null}

@@ -8,6 +8,7 @@ import { createHttpClient } from './http-client.js';
 import { cacheService, buildKey } from './cache.service.js';
 
 /**
+ * L1 cache: raw Open-Meteo forecast payload keyed by coordinates.
  * @param {number} lat
  * @param {number} lon
  * @returns {Promise<{ temperature_c: number, windspeed_kmh: number, condition: string }>}

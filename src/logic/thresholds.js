@@ -20,7 +20,7 @@ export const TEMP_COOL_MESSAGE = 10;
 
 export const TEMP_WARM_MESSAGE = 28;
 
-/** Outdoor-score temp bands (ADR-050). */
+/** Outdoor-score temperature penalty bands (v0.4.1). */
 
 export const TEMP_WARM_SCORE_MAX = 30;
 
@@ -28,7 +28,7 @@ export const TEMP_HOT_SCORE_MAX = 32;
 
 export const TEMP_HEAT_SCORE_MAX = 35;
 
-/** Wind speed (km/h) — flags, alerts, score, labels (ADR-054). */
+/** Wind speed (km/h) — SSOT for flags, alerts, score, and labels. */
 
 export const WIND_CALM_MAX = 12;
 
@@ -58,7 +58,7 @@ export const AQI_SENSITIVE_MAX = 150;
 
 export const AQI_UNHEALTHY_MIN = 101;
 
-/** AQI US — outdoor-score bands (ADR-050). */
+/** AQI US — outdoor-score penalty bands (v0.4.1). */
 
 export const AQI_GOOD_SCORE_MAX = 50;
 

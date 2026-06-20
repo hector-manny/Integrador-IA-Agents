@@ -8,6 +8,7 @@ import { createHttpClient } from './http-client.js';
 import { cacheService, buildKey } from './cache.service.js';
 
 /**
+ * L1 cache: raw Open-Meteo air quality payload keyed by coordinates.
  * @param {number} lat
  * @param {number} lon
  * @returns {Promise<{ aqi_us: number, level: string, dominant_pollutant: string }>}

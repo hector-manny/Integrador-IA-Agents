@@ -21,24 +21,43 @@ export const CONDITION_LABELS_ES = {
   Unknown: 'condiciones variables',
 };
 
-/** Predicative sky phrases for summary templates: "cielo ${phrase}" (ADR-052). */
-export const CONDITION_SKY_PHRASE_ES = {
-  Clear: 'despejado',
-  'Mainly Clear': 'mayormente despejado',
-  'Partly Cloudy': 'parcialmente nublado',
-  Cloudy: 'nublado',
-  Foggy: 'con niebla',
-  'Light Rain': 'con llovizna',
-  'Moderate Rain': 'con lluvia moderada',
-  Rainy: 'lluvioso',
-  'Heavy Rain': 'con lluvia intensa',
-  'Rain Showers': 'con chubascos',
-  'Heavy Rain Showers': 'con chubascos intensos',
-  Snowy: 'nevado',
-  'Heavy Snow': 'con nieve intensa',
+/** Overrides where sky phrase differs from short condition label. */
+const SKY_PHRASE_OVERRIDES_ES = {
   Thunderstorm: 'cubierto con tormenta eléctrica activa',
   'Severe Thunderstorm': 'cubierto con tormenta severa',
   Unknown: 'con condiciones variables',
+};
+
+/** Predicative sky phrases for summary templates: "cielo ${phrase}". */
+export const CONDITION_SKY_PHRASE_ES = {
+  ...CONDITION_LABELS_ES,
+  ...SKY_PHRASE_OVERRIDES_ES,
+};
+
+/** Spanish alert copy for detect-alerts — SSOT for alert messages. */
+export const ALERT_MESSAGES_ES = {
+  air_quality: {
+    high: 'Calidad del aire poco saludable. Evita ejercicio prolongado al aire libre.',
+    medium:
+      'Calidad del aire moderada a insalubre para grupos sensibles. Considera limitar actividades intensas al exterior.',
+  },
+  extreme_temp: {
+    cold: 'Temperatura bajo cero. Protégete del frío extremo y limita la exposición prolongada.',
+    hot: 'Calor extremo. Mantente hidratado y evita esfuerzo intenso al aire libre.',
+  },
+  heat: {
+    medium: 'Calor elevado. Mantente hidratado y busca sombra en actividades al aire libre.',
+  },
+  wind: {
+    high: 'Viento muy fuerte. Evita actividades al aire libre expuestas al viento.',
+    medium: 'Viento notable. Ten precaución con actividades al aire libre.',
+  },
+  severe_weather: {
+    critical: 'Tormenta eléctrica activa. Permanece en interiores y evita espacios abiertos.',
+  },
+  winter_weather: {
+    medium: 'Nieve en la zona. Conduce con precaución y viste abrigo adecuado.',
+  },
 };
 
 export const AQI_LABELS_ES = {
@@ -100,7 +119,7 @@ export function aqiLabelEs(aqi) {
 }
 
 /**
- * Full AQI phrase for tldr/summary narrative (EPA-aligned, ADR-053).
+ * Full AQI phrase for tldr/summary narrative (EPA-aligned bands).
  * @param {number | undefined} aqi
  * @returns {string}
  */

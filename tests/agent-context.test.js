@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildAgentContext } from '../src/logic/agent-context.js';
+import { buildAgentContext } from '../src/logic/agent-context/index.js';
 import { calculateOutdoorScore, finalizeOutdoorScore } from '../src/logic/outdoor-score.js';
 
 const baseLocation = {

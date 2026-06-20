@@ -1,6 +1,8 @@
 ﻿import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
+import { isMainModule } from '../utils/is-main-module.js';
+import { consoleLogger } from '../utils/logger.js';
 import {
   getLocationContext,
   getLocationContexts,
@@ -9,38 +11,43 @@ import { parseZipList, validateZipInput } from '../adapters/input-validation.js'
 import { ErrorResponseSchema, isErrorResponse, ZipInputSchema } from '../models/schemas.js';
 
 /**
- * @param {() => Promise<{ content: Array<{ type: string, text: string }>, isError: boolean }>} handler
- * @returns {Promise<{ content: Array<{ type: string, text: string }>, isError: boolean }>}
+ * @param {import('../utils/logger.js').Logger} logger
+ * @returns {(handler: () => Promise<{ content: Array<{ type: string, text: string }>, isError: boolean }>) => Promise<{ content: Array<{ type: string, text: string }>, isError: boolean }>}
  */
-async function withMcpErrorBoundary(handler) {
-  try {
-    return await handler();
-  } catch (error) {
-    console.error(error);
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(
-            ErrorResponseSchema.parse({
-              error: true,
-              code: 'INTERNAL_ERROR',
-              message: 'Internal server error',
-            }),
-            null,
-            2,
-          ),
-        },
-      ],
-      isError: true,
-    };
-  }
+function createMcpErrorBoundary(logger) {
+  return async function withMcpErrorBoundary(handler) {
+    try {
+      return await handler();
+    } catch (error) {
+      logger.error(error);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(
+              ErrorResponseSchema.parse({
+                error: true,
+                code: 'INTERNAL_ERROR',
+                message: 'Internal server error',
+              }),
+              null,
+              2,
+            ),
+          },
+        ],
+        isError: true,
+      };
+    }
+  };
 }
 
 /**
+ * @param {{ logger?: import('../utils/logger.js').Logger }} [options]
  * @returns {McpServer}
  */
-export function createMcpServer() {
+export function createMcpServer(options = {}) {
+  const logger = options.logger ?? consoleLogger;
+  const withMcpErrorBoundary = createMcpErrorBoundary(logger);
   const server = new McpServer({
     name: 'integrador-ia-location-context',
     version: '0.3.0',
@@ -100,20 +107,19 @@ export function createMcpServer() {
 }
 
 /**
+ * @param {{ logger?: import('../utils/logger.js').Logger }} [options]
  * @returns {Promise<void>}
  */
-export async function startMcpServer() {
-  const server = createMcpServer();
+export async function startMcpServer(options = {}) {
+  const logger = options.logger ?? consoleLogger;
+  const server = createMcpServer({ logger });
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
 
-const isDirectRun =
-  process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'));
-
-if (isDirectRun) {
+if (isMainModule(import.meta.url)) {
   startMcpServer().catch((error) => {
-    console.error('MCP server error:', error);
+    consoleLogger.error('MCP server error:', error);
     process.exitCode = 1;
   });
 }

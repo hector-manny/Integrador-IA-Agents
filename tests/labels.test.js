@@ -1,6 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  CONDITION_LABELS_ES,
+  CONDITION_SKY_PHRASE_ES,
   conditionLabelEs,
   conditionSkyPhraseEs,
   formatAqiPhraseEs,
@@ -8,6 +10,12 @@ import {
 
 describe('labels', () => {
   describe('conditionSkyPhraseEs', () => {
+    it('derives sky phrases from condition labels with explicit overrides', () => {
+      assert.equal(CONDITION_SKY_PHRASE_ES.Clear, CONDITION_LABELS_ES.Clear);
+      assert.equal(CONDITION_SKY_PHRASE_ES.Cloudy, CONDITION_LABELS_ES.Cloudy);
+      assert.notEqual(CONDITION_SKY_PHRASE_ES.Thunderstorm, CONDITION_LABELS_ES.Thunderstorm);
+    });
+
     it('returns singular predicative phrases for clear skies', () => {
       assert.equal(conditionSkyPhraseEs('Clear'), 'despejado');
       assert.equal(conditionSkyPhraseEs('Partly Cloudy'), 'parcialmente nublado');

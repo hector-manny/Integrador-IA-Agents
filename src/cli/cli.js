@@ -3,6 +3,7 @@
   getLocationContexts,
 } from '../orchestrators/location-context.orchestrator.js';
 import { parseZipList } from '../adapters/input-validation.js';
+import { isMainModule } from '../utils/is-main-module.js';
 import { isErrorResponse } from '../models/schemas.js';
 
 /**
@@ -37,10 +38,7 @@ export async function main(argv = process.argv.slice(2)) {
   return hasError ? 1 : 0;
 }
 
-const isDirectRun =
-  process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'));
-
-if (isDirectRun) {
+if (isMainModule(import.meta.url)) {
   main().then((code) => {
     process.exitCode = code;
   });

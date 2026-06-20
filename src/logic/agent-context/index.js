@@ -84,6 +84,3 @@ export function buildAgentContext(context) {
     meta: agentMeta,
   };
 }
-
-/** @deprecated Use buildAgentContext */
-export const buildAgentContextDeterministic = buildAgentContext;
