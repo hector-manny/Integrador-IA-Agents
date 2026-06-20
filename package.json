@@ -1,0 +1,39 @@
+{
+  "name": "integrador-ia-agents",
+  "version": "0.4.1",
+  "description": "Integrador IA - CLI, HTTP and MCP interfaces",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "cli": "node src/cli/cli.js",
+    "start": "node src/cli/cli.js",
+    "start:http": "node src/http/server.js",
+    "start:mcp": "node src/mcp/mcp-server.js",
+    "test": "node --experimental-test-module-mocks --test tests/*.test.js tests/**/*.test.js",
+    "test:live": "node --experimental-test-module-mocks --test tests/**/*.live.test.js",
+    "test:coverage": "node scripts/check-coverage.mjs",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\" \"tests/**/*.mjs\" eslint.config.js",
+    "format:check": "prettier --check \"src/**/*.js\" \"tests/**/*.js\" \"tests/**/*.mjs\" eslint.config.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-cache": "^5.1.2",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.1.0",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.4"
+  }
+}
