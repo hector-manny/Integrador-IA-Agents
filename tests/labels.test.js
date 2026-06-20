@@ -14,10 +14,7 @@ describe('labels', () => {
     });
 
     it('uses natural thunderstorm phrasing', () => {
-      assert.equal(
-        conditionSkyPhraseEs('Thunderstorm'),
-        'cubierto con tormenta eléctrica activa',
-      );
+      assert.equal(conditionSkyPhraseEs('Thunderstorm'), 'cubierto con tormenta eléctrica activa');
     });
 
     it('falls back when condition is missing', () => {

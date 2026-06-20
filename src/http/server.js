@@ -1,7 +1,10 @@
 ﻿import express from 'express';
 
 import { getConfig } from '../config.js';
-import { getLocationContext, getLocationContexts } from '../orchestrators/location-context.orchestrator.js';
+import {
+  getLocationContext,
+  getLocationContexts,
+} from '../orchestrators/location-context.orchestrator.js';
 import { parseZipList, validateZipInput } from '../adapters/input-validation.js';
 import { ErrorResponseSchema, isErrorResponse } from '../models/schemas.js';
 
@@ -68,9 +71,9 @@ export function createApp(options = {}) {
       const { zips } = req.query;
 
       if (!zips || typeof zips !== 'string') {
-        return res.status(400).json(
-          invalidZipError('Query parameter zips is required (comma-separated)'),
-        );
+        return res
+          .status(400)
+          .json(invalidZipError('Query parameter zips is required (comma-separated)'));
       }
 
       const { validZips, errors } = parseZipList(zips);

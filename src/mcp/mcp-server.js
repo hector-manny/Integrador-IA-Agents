@@ -1,7 +1,10 @@
 ﻿import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { getLocationContext, getLocationContexts } from '../orchestrators/location-context.orchestrator.js';
+import {
+  getLocationContext,
+  getLocationContexts,
+} from '../orchestrators/location-context.orchestrator.js';
 import { parseZipList, validateZipInput } from '../adapters/input-validation.js';
 import { ErrorResponseSchema, isErrorResponse, ZipInputSchema } from '../models/schemas.js';
 

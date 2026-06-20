@@ -1,7 +1,4 @@
-import {
-  WIND_ALERT_HIGH_MIN,
-  WIND_ALERT_MEDIUM_MIN,
-} from '../thresholds.js';
+import { WIND_ALERT_HIGH_MIN, WIND_ALERT_MEDIUM_MIN } from '../thresholds.js';
 import { isSnowCondition, isStormCondition } from './weather-conditions.js';
 
 const SEVERITY_ORDER = { critical: 4, high: 3, medium: 2, low: 1 };
@@ -46,8 +43,7 @@ export function detectAlerts({ weather, air_quality }) {
       alerts.push({
         severity: 'high',
         type: 'air_quality',
-        message:
-          'Calidad del aire poco saludable. Evita ejercicio prolongado al aire libre.',
+        message: 'Calidad del aire poco saludable. Evita ejercicio prolongado al aire libre.',
         affects: ['respiratory_sensitive', 'children', 'elderly'],
       });
     } else if (aqi > 100) {

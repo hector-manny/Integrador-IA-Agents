@@ -1,10 +1,7 @@
 import { buildAgentContext } from '../logic/agent-context.js';
 import { calculateOutdoorScore, finalizeOutdoorScore } from '../logic/outdoor-score.js';
 import { getConfig } from '../config.js';
-import {
-  ErrorResponseSchema,
-  LocationContextSchema,
-} from '../models/schemas.js';
+import { ErrorResponseSchema, LocationContextSchema } from '../models/schemas.js';
 import { cacheService, buildKey } from '../services/cache.service.js';
 import { resolveZip } from '../services/zip.service.js';
 import { getWeather } from '../services/weather.service.js';

@@ -50,10 +50,14 @@ describe('E2E CLI contract (offline)', () => {
 
   it('isolated contract tests pass with mocked orchestrator', async () => {
     const isolated = path.join(root, 'tests/e2e-cli.contract.isolated.mjs');
-    const child = spawn(process.execPath, ['--experimental-test-module-mocks', '--test', isolated], {
-      cwd: root,
-      env: process.env,
-    });
+    const child = spawn(
+      process.execPath,
+      ['--experimental-test-module-mocks', '--test', isolated],
+      {
+        cwd: root,
+        env: process.env,
+      },
+    );
     let stderr = '';
     child.stderr.on('data', (chunk) => {
       stderr += chunk;

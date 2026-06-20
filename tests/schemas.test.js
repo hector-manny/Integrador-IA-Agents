@@ -1,10 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  AgentContextSchema,
-  ErrorCodeSchema,
-  LocationSchema,
-} from '../src/models/schemas.js';
+import { AgentContextSchema, ErrorCodeSchema, LocationSchema } from '../src/models/schemas.js';
 
 describe('AgentContextSchema', () => {
   const validContext = {

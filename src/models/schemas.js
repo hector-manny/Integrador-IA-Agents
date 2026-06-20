@@ -85,11 +85,7 @@ export const LocationContextSchema = z.object({
   agent_context: AgentContextSchema,
 });
 
-export const ErrorCodeSchema = z.enum([
-  'LOCATION_NOT_FOUND',
-  'INVALID_ZIP',
-  'INTERNAL_ERROR',
-]);
+export const ErrorCodeSchema = z.enum(['LOCATION_NOT_FOUND', 'INVALID_ZIP', 'INTERNAL_ERROR']);
 
 export const ErrorResponseSchema = z.object({
   error: z.literal(true),

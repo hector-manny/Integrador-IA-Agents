@@ -1,8 +1,4 @@
-import {
-  WIND_CALM_MAX,
-  WIND_MODERATE_MAX,
-  WIND_STRONG_MAX,
-} from '../thresholds.js';
+import { WIND_CALM_MAX, WIND_MODERATE_MAX, WIND_STRONG_MAX } from '../thresholds.js';
 
 /** Spanish labels for agent-facing narrative text. */
 

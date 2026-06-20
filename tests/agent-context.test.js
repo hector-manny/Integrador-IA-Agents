@@ -83,11 +83,7 @@ describe('buildAgentContext', () => {
     assert.equal(ctx.flags.location_confidence, 'low');
     assert.match(ctx.summary, /aproximada|puede no ser exacta/i);
     assert.equal(ctx.meta.location_source, 'ip_fallback');
-    assert.ok(
-      ctx.followup_hints.suggested_questions.some((q) =>
-        /confirm|postal|código/i.test(q),
-      ),
-    );
+    assert.ok(ctx.followup_hints.suggested_questions.some((q) => /confirm|postal|código/i.test(q)));
   });
 
   it('generates high air quality alert and leads summary with alert', () => {
@@ -136,9 +132,8 @@ describe('buildAgentContext', () => {
     assert.equal(ctx.flags.outdoor_friendly, false);
     assert.ok(ctx.recommendations.avoid_activities.some((a) => /aire libre/i.test(a)));
     assert.ok(
-      ctx.recommendations.suitable_activities.every((a) =>
-        /casa|interior/i.test(a),
-      ) || ctx.recommendations.suitable_activities.length === 0,
+      ctx.recommendations.suitable_activities.every((a) => /casa|interior/i.test(a)) ||
+        ctx.recommendations.suitable_activities.length === 0,
     );
   });
 
@@ -194,9 +189,7 @@ describe('buildAgentContext', () => {
 
     assert.equal(ctx.recommendations.hydration_priority, 'high');
     assert.ok(ctx.recommendations.avoid_activities.some((a) => /aire libre/i.test(a)));
-    assert.ok(
-      ctx.recommendations.suitable_activities.every((a) => /casa|interior/i.test(a)),
-    );
+    assert.ok(ctx.recommendations.suitable_activities.every((a) => /casa|interior/i.test(a)));
     assert.equal(ctx.meta.location_source, 'zip');
   });
 
@@ -384,7 +377,10 @@ describe('buildAgentContext', () => {
     });
 
     assert.ok(ctx.alerts.some((a) => a.type === 'extreme_temp' && a.severity === 'high'));
-    assert.equal(ctx.alerts.some((a) => a.type === 'heat'), false);
+    assert.equal(
+      ctx.alerts.some((a) => a.type === 'heat'),
+      false,
+    );
     assert.equal(ctx.flags.extreme_temperature, true);
     assert.equal(ctx.headline, 'Temperatura extrema hoy');
     assert.equal(ctx.response_tone, 'cautious');
@@ -406,7 +402,10 @@ describe('buildAgentContext', () => {
 
     const heat = ctx.alerts.find((a) => a.type === 'heat');
     assert.ok(heat);
-    assert.equal(ctx.alerts.some((a) => a.type === 'extreme_temp'), false);
+    assert.equal(
+      ctx.alerts.some((a) => a.type === 'extreme_temp'),
+      false,
+    );
     assert.equal(ctx.flags.extreme_temperature, false);
     assert.equal(ctx.response_tone, 'cautious');
   });
@@ -539,7 +538,12 @@ describe('v0.4.1 regression matrix', () => {
       buildAgentContext({
         input: { zip: '10001', source: 'zip' },
         location: { city: 'NYC', state: 'NY', country: 'US' },
-        weather: { temperature_c: 22, windspeed_kmh: 12, condition: 'Clear', observed_at: observedAt },
+        weather: {
+          temperature_c: 22,
+          windspeed_kmh: 12,
+          condition: 'Clear',
+          observed_at: observedAt,
+        },
         air_quality: { aqi_us: 42, level: 'Good', dominant_pollutant: 'pm2_5' },
         outdoor_score: 10,
       }),

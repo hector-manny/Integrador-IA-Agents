@@ -74,9 +74,7 @@ const RISK_FLAG_LABELS = {
  * @returns {string[]}
  */
 export function formatRiskFlags(flags) {
-  return flags
-    .map((flag) => RISK_FLAG_LABELS[flag])
-    .filter((label) => label !== undefined);
+  return flags.map((flag) => RISK_FLAG_LABELS[flag]).filter((label) => label !== undefined);
 }
 
 /**

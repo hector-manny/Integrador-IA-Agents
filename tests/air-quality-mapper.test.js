@@ -23,10 +23,7 @@ describe('air-quality-mapper', () => {
   });
 
   it('returns dominant pollutant with canonical key', () => {
-    assert.equal(
-      dominantPollutant({ pm2_5: 10, ozone: 25, nitrogen_dioxide: 5 }),
-      'o3',
-    );
+    assert.equal(dominantPollutant({ pm2_5: 10, ozone: 25, nitrogen_dioxide: 5 }), 'o3');
     assert.equal(dominantPollutant({ pm2_5: 30, pm10: 10 }), 'pm2_5');
     assert.equal(dominantPollutant({}), 'unknown');
   });
