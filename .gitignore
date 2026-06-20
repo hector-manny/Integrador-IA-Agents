@@ -3,3 +3,13 @@
 *.onnx
 logs/
 coverage/
+
+# Local-only: agent rules, docs internos, planes SDD, memoria
+.cursor/
+docs/
+memory/
+plans/
+
+# CI local (no se publica)
+.github/
+scripts/check-coverage.mjs
