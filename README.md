@@ -9,18 +9,40 @@ Herramienta Node.js que recibe ZIP codes de EE.UU., consulta APIs públicas (zip
 - Node.js >= 18
 - Conexión a internet (APIs externas)
 
-## Instalación
+## Instalación e inicio rápido
 
 ```bash
 git clone <repo-url>
 cd Integrador-IA-Agents
-npm install
-cp .env.example .env
 ```
+
+Instala dependencias y ejecuta el CLI con un ZIP:
+
+```bash
+npm install
+node index.js 80203
+```
+
+> **Sin API keys ni `.env`.** No necesitas claves de API ni archivo de configuración: la config tiene defaults (validados con Zod) y todas las APIs externas son **públicas y gratuitas** (zippopotam.us, Open-Meteo weather, Open-Meteo air-quality y el fallback ip-api.com). Solo requieres **conexión a internet**. El `.env` es **opcional** (ver la sección **Configuración**).
+
+## Validación rápida
+
+```bash
+node index.js 80203
+```
+
+Salida esperada: **exit code 0** y un JSON con la forma `LocationContext`:
+
+- `input` — `{ zip, source }` (`source: "zip"` o `"ip_fallback"`).
+- `location` — ciudad, estado, lat/lon y zona horaria.
+- `weather` — temperatura, viento y `condition` (WMO mapeada), o `null` si la API falla.
+- `air_quality` — `aqi_us`, o `null` si la API falla.
+- `outdoor_score` — entero **1–10** (o `null` si faltan todos los factores).
+- `agent_context` — objeto en español listo para agentes (ver [Agent Context](#agent-context)).
 
 ## Configuración
 
-Variables en `.env` (ver `.env.example`):
+El `.env` es **opcional**: todas las variables tienen defaults (validados con Zod), por lo que la herramienta funciona sin configuración. Crea un `.env` (a partir de `.env.example`) solo si quieres sobreescribir alguna:
 
 | Variable | Default | Descripción |
 |----------|---------|-------------|
@@ -68,16 +90,18 @@ Breaking changes en **v0.3.0** (alineación con PRD y prueba técnica):
 
 ## CLI
 
+Comando canónico: `node index.js <zip> [zip2 ...]`. Alternativa equivalente vía npm: `npm run cli -- 80203`.
+
 ### Un ZIP
 
 ```bash
-node src/cli/cli.js 80203
+node index.js 80203
 ```
 
 ### Múltiples ZIPs
 
 ```bash
-node src/cli/cli.js 80203 10001 94105
+node index.js 80203 10001 94105
 ```
 
 ### Fallback IP
@@ -85,7 +109,7 @@ node src/cli/cli.js 80203 10001 94105
 Si el ZIP no existe en zippopotam, se usa geolocalización por IP (`source: "ip_fallback"`):
 
 ```bash
-node src/cli/cli.js 99999
+node index.js 99999
 ```
 
 ## HTTP
@@ -152,16 +176,61 @@ flowchart LR
 
 ## Outdoor Score (v0.4.1)
 
-Escala 1–10 calculada con base 5 + ajustes por factor, luego `clamp(1, 10)`. Si `source === "ip_fallback"`, se aplica **−1** adicional (mínimo 1) por incertidumbre de ubicación.
+Escala entera **1–10**. Se parte de una base 5 y se suman los ajustes de cada factor disponible:
 
-| Factor | Condición favorable | Neutral | Penalización |
-|--------|---------------------|---------|--------------|
-| Temperatura | 18–26°C (+3) | 26–30°C (+1), 30–32°C (0) | 32–35°C (−1), <0°C o >35°C (−3) |
-| Viento | <12 km/h (+2) | 12–18 (+1), 18–25 (0) | 25–35 (−1), ≥35 (−2) |
-| Condición | Clear / Mainly Clear (+1) | Partly Cloudy (+1), Cloudy (0) | Thunderstorm (−4) |
-| AQI | ≤50 (+1) | 51–75 (0) | 76–100 (−1), >150 (−3) |
+```text
+score = clamp(5 + Σ ajustes, 1, 10)
+```
 
-Si faltan todos los factores, `outdoor_score` es `null`.
+Reglas:
+
+- Un factor **ausente** (`null`) se **excluye** de la suma (no penaliza).
+- Si faltan **todos** los factores → `outdoor_score: null`.
+- Si `source === "ip_fallback"` se aplica **−1 adicional** tras el clamp (mínimo 1) por incertidumbre de ubicación.
+
+**Temperatura (°C)**
+
+| Rango | Ajuste |
+|-------|--------|
+| 18–26 | +3 |
+| 10–17.99 | +2 |
+| 26.01–30 | +1 |
+| 30.01–32 | 0 |
+| 32.01–35 | −1 |
+| 0–9.99 | 0 |
+| < 0 | −3 |
+| > 35 | −3 |
+
+**Viento (km/h)**
+
+| Rango | Ajuste |
+|-------|--------|
+| < 12 | +2 |
+| 12–17.99 | +1 |
+| 18–24.99 | 0 |
+| 25–34.99 | −1 |
+| ≥ 35 | −2 |
+
+**Condición** (WMO mapeada, ver [Mapeo WMO](#mapeo-wmo))
+
+| Condición | Ajuste |
+|-----------|--------|
+| Clear / Mainly Clear / Partly Cloudy | +1 |
+| Cloudy / Unknown | 0 |
+| Foggy | −1 |
+| Light Rain / Moderate Rain / Rainy / Heavy Rain / Rain Showers / Heavy Rain Showers | −2 |
+| Snowy / Heavy Snow | −3 |
+| Thunderstorm / Severe Thunderstorm | −4 |
+
+**Calidad del aire (AQI US)**
+
+| Rango | Ajuste |
+|-------|--------|
+| ≤ 50 | +1 |
+| 51–75 | 0 |
+| 76–100 | −1 |
+| 101–150 | −1 |
+| > 150 | −3 |
 
 Ejemplos de discriminación (batch de regresión):
 
@@ -175,22 +244,26 @@ Ejemplos de discriminación (batch de regresión):
 
 ## Mapeo WMO
 
-Códigos WMO de Open-Meteo se mapean a condiciones legibles en `src/logic/weather-mapper.js`:
+Los códigos WMO de Open-Meteo se mapean al campo de salida `condition` en `src/logic/weather-mapper.js`. El criterio agrupa los códigos por **familias** (despejado/nublado, niebla, lluvia por intensidad, nieve, chubascos y tormenta): no existe una única agrupación "correcta", pero esta es coherente y defendible para la decisión de salir al aire libre.
 
-| Código | Condición |
-|--------|-----------|
+| Código(s) | `condition` |
+|-----------|-------------|
 | 0 | Clear |
 | 1 | Mainly Clear |
 | 2 | Partly Cloudy |
 | 3 | Cloudy |
 | 45, 48 | Foggy |
-| 51–55 | Light/Moderate Rain |
-| 61–65 | Rainy / Heavy Rain |
-| 71–75 | Snowy / Heavy Snow |
-| 80–82 | Rain Showers |
-| 95–99 | Thunderstorm |
-
-Códigos no mapeados → `"Unknown"`.
+| 51, 53 | Light Rain |
+| 55 | Moderate Rain |
+| 61, 63 | Rainy |
+| 65 | Heavy Rain |
+| 71, 73 | Snowy |
+| 75 | Heavy Snow |
+| 80, 81 | Rain Showers |
+| 82 | Heavy Rain Showers |
+| 95, 96 | Thunderstorm |
+| 99 | Severe Thunderstorm |
+| cualquier otro | Unknown |
 
 ## Agent Context
 

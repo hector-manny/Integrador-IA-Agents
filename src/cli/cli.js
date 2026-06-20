@@ -11,7 +11,7 @@ import { isErrorResponse } from '../models/schemas.js';
  */
 export async function main(argv = process.argv.slice(2)) {
   if (argv.length === 0) {
-    console.error('Usage: node src/cli/cli.js <zip> [zip2 ...]');
+    console.error('Usage: node index.js <zip> [zip2 ...]');
     return 1;
   }
 

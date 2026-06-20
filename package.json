@@ -4,12 +4,13 @@
   "description": "Integrador IA - CLI, HTTP and MCP interfaces",
   "type": "module",
   "private": true,
+  "main": "index.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "cli": "node src/cli/cli.js",
-    "start": "node src/cli/cli.js",
+    "cli": "node index.js",
+    "start": "node index.js",
     "start:http": "node src/http/server.js",
     "start:mcp": "node src/mcp/mcp-server.js",
     "test": "node --experimental-test-module-mocks --test tests/*.test.js tests/**/*.test.js",
